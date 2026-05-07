@@ -119,7 +119,9 @@ Continue working in VS Code. If you closed your browser editor, reopen your deve
    rely on `safe-outputs` with `create-pull-request`.
    ```
 
-5. Ask Copilot to commit, push, and open a pull request.
+5. In the new terminal window, use the keyboard shortcut Ctrl + I (Windows) or Cmd + I (Mac) to bring up Copilot's Terminal Inline Chat.
+
+6. Ask Copilot to commit, push, and open a pull request.
 
    > ![Static Badge](https://img.shields.io/badge/-Prompt-text?style=social&logo=github%20copilot)
    >
