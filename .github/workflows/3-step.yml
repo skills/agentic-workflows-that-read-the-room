@@ -176,3 +176,39 @@ jobs:
     with:
       issue-url: ${{ needs.find_exercise.outputs.issue-url }}
       exercise-title: "Agentic Workflows That Read the Room"
+
+  disable_generated_workflow:
+    name: Disable generated updater workflow
+    needs: [find_exercise, finish_exercise]
+    runs-on: ubuntu-latest
+    env:
+      ISSUE_NUMBER: ${{ needs.find_exercise.outputs.issue-number }}
+
+    steps:
+      - name: Disable update-github-info workflow after issue closure
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          issue_state="$(gh issue view "$ISSUE_NUMBER" --json state --jq .state)"
+          if [ "$issue_state" != "CLOSED" ]; then
+            echo "Exercise issue is not closed yet; skipping updater workflow disable."
+            exit 0
+          fi
+
+          workflow_ids="$(gh workflow list --all --json id,name,path --jq '.[] | select(
+            (.name == "update-github-info") or
+            (.name == "Update GitHub Info") or
+            ((.path // "") | endswith("/update-github-info.lock.yml")) or
+            ((.path // "") | endswith("/update-github-info.yml"))
+          ) | .id')"
+
+          if [ -z "$workflow_ids" ]; then
+            echo "No generated updater workflow found to disable."
+            exit 0
+          fi
+
+          while IFS= read -r workflow_id; do
+            [ -z "$workflow_id" ] && continue
+            gh workflow disable "$workflow_id"
+            echo "Disabled workflow id: $workflow_id"
+          done <<< "$workflow_ids"

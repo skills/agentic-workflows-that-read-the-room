@@ -78,6 +78,14 @@ jobs:
         with:
           file: .github/workflows/update-github-info.md
 
+      - name: Check agent instructions include no auto-compile rule
+        id: check-agent-no-compile
+        continue-on-error: true
+        uses: skills/action-keyphrase-checker@v2
+        with:
+          text-file: .github/agents/agentic-workflows.agent.md
+          keyphrase: Only create or update the markdown workflow file.
+
       - name: Check workflow uses all three sources
         id: check-workflow-sources
         continue-on-error: true
@@ -124,6 +132,8 @@ jobs:
                 passed: ${{ steps.check-site-content.outcome == 'success' }}
               - description: "Checked for .github/workflows/update-github-info.md"
                 passed: ${{ steps.check-workflow-file.outcome == 'success' }}
+              - description: "Checked that the agent instructions include the no auto-compile rule"
+                passed: ${{ steps.check-agent-no-compile.outcome == 'success' }}
               - description: "Checked that the workflow uses Mona's notes, the GitHub Blog, and the GitHub Changelog"
                 passed: ${{ steps.check-workflow-sources.outcome == 'success' }}
               - description: "Checked that the workflow creates a pull request for Mona"

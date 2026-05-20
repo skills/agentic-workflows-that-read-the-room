@@ -12,7 +12,7 @@ In this step, you'll create a workflow definition in `.github/workflows/` and pa
 
 Continue working in VS Code. If you closed your browser editor, reopen your development environment from your repository's **Code** menu.
 
-1. In the new terminal window, use the keyboard shortcut `Ctrl + I` (Windows) or `Cmd + I` (Mac) to bring up **Copilot's Terminal Inline Chat**.
+1. In the new ![Static Badge](https://img.shields.io/badge/Terminal-text?logo=gnometerminal&labelColor=0969da&color=ddf4ff) **terminal window**, use the keyboard shortcut `Ctrl + I` (Windows) or `Cmd + I` (Mac) to bring up **Copilot's Terminal Inline Chat**.
 
 2. Ask Copilot to help create a branch, update a file, and publish the work.
 
@@ -64,7 +64,7 @@ Continue working in VS Code. If you closed your browser editor, reopen your deve
 
 ### :keyboard: Activity: Compile the `update-github-info.md` Agentic Workflow
 
-1. Compile the agentic workflow file `.github/workflows/update-github-info.md` in the terminal.
+1. Compile the agentic workflow file `.github/workflows/update-github-info.md` in the ![Static Badge](https://img.shields.io/badge/Terminal-text?logo=gnometerminal&labelColor=0969da&color=ddf4ff) **terminal window**.
 
    > ![Static Badge](https://img.shields.io/badge/Terminal-text?logo=gnometerminal&labelColor=0969da&color=ddf4ff)
    >
@@ -125,9 +125,9 @@ Continue working in VS Code. If you closed your browser editor, reopen your deve
    rely on `safe-outputs` with `create-pull-request`.
    ```
 
-5. In the new terminal window, use the keyboard shortcut Ctrl + I (Windows) or Cmd + I (Mac) to bring up Copilot's Terminal Inline Chat.
+5. In the new ![Static Badge](https://img.shields.io/badge/Terminal-text?logo=gnometerminal&labelColor=0969da&color=ddf4ff) **terminal window**, use the keyboard shortcut Ctrl + I (Windows) or Cmd + I (Mac) to bring up Copilot's Terminal Inline Chat.
 
-6. Ask Copilot to commit, push, and open a pull request.
+   Ask Copilot to commit, push, and open a pull request.
 
    > ![Static Badge](https://img.shields.io/badge/-Prompt-text?style=social&logo=github%20copilot)
    >

@@ -32,7 +32,7 @@ The workflow uses `safe-outputs: create-pull-request`, so the agent can draft we
    > - Add to sources awesome-copilot workflows https://awesome-copilot.github.com/workflows/
    > ```
 
-3. Compile the agentic workflow file `.github/workflows/update-github-info.md` in the terminal.
+3. Compile the agentic workflow file `.github/workflows/update-github-info.md` in the ![Static Badge](https://img.shields.io/badge/Terminal-text?logo=gnometerminal&labelColor=0969da&color=ddf4ff) **terminal window**.
 
    > ![Static Badge](https://img.shields.io/badge/Terminal-text?logo=gnometerminal&labelColor=0969da&color=ddf4ff)
    >
@@ -40,7 +40,9 @@ The workflow uses `safe-outputs: create-pull-request`, so the agent can draft we
    > gh aw compile .github/workflows/update-github-info.md
    > ```
 
-4. Ask Copilot to commit, push, and open a pull request.
+4. In the new ![Static Badge](https://img.shields.io/badge/Terminal-text?logo=gnometerminal&labelColor=0969da&color=ddf4ff) **terminal window**, use the keyboard shortcut Ctrl + I (Windows) or Cmd + I (Mac) to bring up Copilot's Terminal Inline Chat.
+
+   Ask Copilot to commit, push, and open a pull request.
 
    > ![Static Badge](https://img.shields.io/badge/-Prompt-text?style=social&logo=github%20copilot)
    >
@@ -59,15 +61,15 @@ The workflow uses `safe-outputs: create-pull-request`, so the agent can draft we
 
    <img width="50%" height="50%" alt="Run the update-github-info workflow" src="../images/run-update-github-info-3.png" />
 
-5. Wait for the workflow to create a pull request for Mona's website update.
+6. Wait for the workflow to create a pull request for Mona's website update.
 
    <img width="50%" alt="Pull request list showing a generated Mona website update pull request" src="../images/generated-update-pr.svg" />
 
-6. Open the generated pull request and review the **Files changed** tab. Confirm it updates `site/content/github-info.md` and mentions the source of the update.
+7. Open the generated pull request and review the **Files changed** tab. Confirm it updates `site/content/github-info.md` and mentions the source of the update.
 
    <img width="50%" alt="Pull request files changed tab showing site/content/github-info.md" src="../images/pr-files-changed-github-info.svg" />
 
-7. Leave the generated pull request open. When the updater workflow finishes, Mona will look for an open pull request that updates `site/content/github-info.md`. Wait about 20 seconds, then refresh the exercise issue for the final review.
+8. Leave the generated pull request open. When the updater workflow finishes, Mona will look for an open pull request that updates `site/content/github-info.md`. Wait about 20 seconds, then refresh the exercise issue for the final review.
 
 <details>
 <summary>Having trouble? 🤷</summary><br/>
