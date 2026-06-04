@@ -60,7 +60,8 @@ Continue working in VS Code. If you closed your browser editor, reopen your deve
    >   - web fetch https://github.blog/changelog/
    > - update site/content/github-info.md, and open
    > - a pull request for Mona to review.
-   > - Check the syntax of the configuration for the agentic workflow we create
+   > - Check the syntax of the configuration for the agentic workflow is valid
+   > - Don't compile the workflow
    > ```
 
 ### :keyboard: Activity: Compile the `update-github-info.md` Agentic Workflow
