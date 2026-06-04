@@ -5,11 +5,39 @@ import copilot from '../../assets/copilot.png';
 import ducky from '../../assets/ducky.png';
 import githubInfoMarkdown from '../../content/github-info.md?raw';
 
+const publishedDateLabel = new Intl.DateTimeFormat('en-US', {
+  month: 'long',
+  day: 'numeric',
+  year: 'numeric',
+}).format(new Date());
+
 function toPlainText(value) {
   return value
     .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
     .replace(/[`*_]/g, '')
     .trim();
+}
+
+function extractDateFromText(value) {
+  const match = value.match(
+    /(January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},\s+\d{4}|(January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{4}/i
+  );
+
+  return match ? match[0] : '';
+}
+
+function getPostedDate({ sourceLabel, summary }) {
+  const sourceDate = extractDateFromText(sourceLabel || '');
+  if (sourceDate) {
+    return sourceDate;
+  }
+
+  const summaryDate = extractDateFromText(summary || '');
+  if (summaryDate) {
+    return summaryDate;
+  }
+
+  return publishedDateLabel;
 }
 
 function getMarkdownSections(markdown) {
@@ -42,14 +70,47 @@ function getMarkdownSections(markdown) {
   return sections;
 }
 
-const contentUpdates = getMarkdownSections(githubInfoMarkdown).map((section) => {
+function splitSectionEntries(section) {
+  const entries = [];
+  let currentEntry = {
+    title: section.title,
+    lines: [],
+  };
+
+  for (const line of section.lines) {
+    if (line.startsWith('### ')) {
+      entries.push(currentEntry);
+      currentEntry = {
+        title: toPlainText(line.replace(/^###\s+/, '')),
+        lines: [],
+      };
+      continue;
+    }
+
+    currentEntry.lines.push(line);
+  }
+
+  entries.push(currentEntry);
+  return entries;
+}
+
+function isSourceLine(line) {
+  const normalized = line.replace(/^>\s*/, '').trim();
+  return /^\*?source:/i.test(normalized);
+}
+
+function isTableLine(line) {
+  return /^\|.*\|$/.test(line);
+}
+
+function getEntryContent(entryLines) {
   const paragraphs = [];
   const bullets = [];
 
-  for (const line of section.lines) {
+  for (const line of entryLines) {
     const trimmedLine = line.trim();
 
-    if (!trimmedLine) {
+    if (!trimmedLine || isSourceLine(trimmedLine) || isTableLine(trimmedLine)) {
       continue;
     }
 
@@ -58,27 +119,67 @@ const contentUpdates = getMarkdownSections(githubInfoMarkdown).map((section) => 
       continue;
     }
 
-    paragraphs.push(toPlainText(trimmedLine));
+    paragraphs.push(toPlainText(trimmedLine.replace(/^>\s*/, '')));
   }
 
   return {
-    type: 'From github-info.md',
-    date: 'Repository content',
-    title: section.title,
-    summary: paragraphs[0] ?? bullets.join(' '),
-    href: '#content-sources',
+    paragraphs,
     bullets,
+    summary: paragraphs[0] ?? bullets.join(' '),
   };
-}).filter((update) => update.summary);
+}
 
-const latestRelease = {
-  eyebrow: 'Latest release highlight',
-  title: 'Secret scanning in AI coding agents via the GitHub MCP Server',
-  date: 'GitHub Changelog · March 17, 2026',
-  summary:
-    'GitHub now supports secret scanning in AI coding agents through the GitHub MCP Server, helping teams catch exposed credentials and sensitive data earlier in automated coding flows.',
-  href: 'https://github.blog/changelog/2026-03-17-secret-scanning-in-ai-coding-agents-via-the-github-mcp-server/',
-};
+const contentUpdates = getMarkdownSections(githubInfoMarkdown)
+  .flatMap((section) => splitSectionEntries(section).map((entry) => {
+    const { paragraphs, bullets, summary } = getEntryContent(entry.lines);
+    const sourceLine = entry.lines.find((line) => isSourceLine(line.trim()));
+    const sourceLabel = sourceLine ? toPlainText(sourceLine.replace(/^\*?Source:\s*/i, '').replace(/^\*|\*$/g, '')) : '';
+    const postedDate = getPostedDate({ sourceLabel, summary });
+
+    return {
+      type: 'From github-info.md',
+      date: postedDate,
+      section: section.title,
+      title: entry.title,
+      summary,
+      href: '#content-sources',
+      bullets,
+      sourceLabel,
+      hasDetails: paragraphs.length > 0 || bullets.length > 0,
+    };
+  }))
+  .filter((update) => update.summary && update.hasDetails)
+  .map(({ hasDetails, ...update }) => update);
+
+const latestContentUpdates = contentUpdates.filter((update) => update.section === 'Latest GitHub Updates');
+const supportingContentUpdates = contentUpdates.filter((update) => update.section !== 'Latest GitHub Updates');
+const latestBlogOrChangelogUpdates = latestContentUpdates.filter((update) =>
+  /github\s+(blog|changelog)/i.test(update.sourceLabel)
+);
+const latestOtherUpdates = latestContentUpdates.filter((update) =>
+  !/github\s+(blog|changelog)/i.test(update.sourceLabel)
+);
+
+const latestMarkdownHighlight = latestBlogOrChangelogUpdates.find(
+  (update) => update.title !== 'Latest GitHub Updates'
+) ?? latestContentUpdates.find((update) => update.title !== 'Latest GitHub Updates');
+
+const latestRelease = latestMarkdownHighlight
+  ? {
+    eyebrow: 'Latest repository highlight',
+    title: latestMarkdownHighlight.title,
+    date: latestMarkdownHighlight.date,
+    summary: latestMarkdownHighlight.summary,
+    href: '#recent-updates',
+  }
+  : {
+    eyebrow: 'Latest release highlight',
+    title: 'Secret scanning in AI coding agents via the GitHub MCP Server',
+    date: 'GitHub Changelog · March 17, 2026',
+    summary:
+      'GitHub now supports secret scanning in AI coding agents through the GitHub MCP Server, helping teams catch exposed credentials and sensitive data earlier in automated coding flows.',
+    href: 'https://github.blog/changelog/2026-03-17-secret-scanning-in-ai-coding-agents-via-the-github-mcp-server/',
+  };
 
 const recentUpdates = [
   {
@@ -115,7 +216,12 @@ const recentUpdates = [
   },
 ];
 
-const homepageUpdates = [...contentUpdates, ...recentUpdates];
+const homepageUpdates = [
+  ...latestBlogOrChangelogUpdates,
+  ...latestOtherUpdates,
+  ...recentUpdates,
+  ...supportingContentUpdates,
+];
 
 const sourceGroups = [
   {
