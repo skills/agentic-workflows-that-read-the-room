@@ -105,6 +105,7 @@ jobs:
 
       - name: Check generated PR title mentions Mona or GitHub Info
         id: check-pr-title
+        if: steps.find-generated-pr.outcome == 'success'
         continue-on-error: true
         run: |
           title="$(gh pr view "${{ steps.find-generated-pr.outputs.pr_number }}" --json title --jq .title)"
@@ -112,6 +113,7 @@ jobs:
 
       - name: Check generated PR includes source context
         id: check-pr-sources
+        if: steps.find-generated-pr.outcome == 'success'
         continue-on-error: true
         run: |
           gh pr diff "${{ steps.find-generated-pr.outputs.pr_number }}" | grep -Eiq 'GitHub Blog|GitHub Changelog|github.blog|github.com'
