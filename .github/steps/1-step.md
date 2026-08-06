@@ -40,6 +40,12 @@ Let's start in the pre-configured Codespace for this exercise. The dev container
    > curl -fsSL https://raw.githubusercontent.com/github/gh-aw/main/install-gh-aw.sh | bash
    > ```
 
+   Confirm that the extension is available before continuing:
+
+   > ```bash
+   > gh aw version
+   > ```
+
    This standalone installer is the easiest path in Codespaces because it does not depend on interactive `gh extension install` authentication.
 
 6. Set up the `COPILOT_GITHUB_TOKEN` repository secret that the Copilot engine will use later in the exercise.
@@ -80,17 +86,20 @@ Let's start in the pre-configured Codespace for this exercise. The dev container
 
 8. Initialize the repository with `gh aw` in the terminal.
 
+   Run this command from the root of your copied repository. The command opens a setup pull request instead of committing directly to `main`.
+
    > ![Static Badge](https://img.shields.io/badge/Terminal-text?logo=gnometerminal&labelColor=0969da&color=ddf4ff)
    >
    > ```bash
-   > gh aw init --create-pull-request --completions
+   > gh aw init --create-pull-request --engine copilot --completions
    > ```
 
 9. Review the pull request that was opened. It should include repository setup files such as:
 
-   - `.github/workflows/copilot-setup-steps.yml`
+   - `.github/skills/agentic-workflows/SKILL.md`
    - `.github/agents/agentic-workflows.md`
    - `.github/mcp.json`
+   - `.github/workflows/copilot-setup-steps.yml`
    - `.gitattributes`
 
 10. Merge the setup pull request into `main`.
@@ -100,8 +109,8 @@ Let's start in the pre-configured Codespace for this exercise. The dev container
 <details>
 <summary>Having trouble? 🤷</summary><br/>
 
-- Make sure `gh aw init --create-pull-request --completions` ran from your copied exercise repository.
-- The check looks for agentic workflows setup files created by `gh aw init`, including `.github/workflows/copilot-setup-steps.yml`, `.github/agents/agentic-workflows.md`, `.github/mcp.json`, and `.gitattributes`.
+- Make sure `gh aw init --create-pull-request --engine copilot --completions` ran from your copied exercise repository.
+- The check looks for agentic workflows setup files created by `gh aw init`, including `.github/skills/agentic-workflows/SKILL.md`, `.github/agents/agentic-workflows.md`, `.github/mcp.json`, `.github/workflows/copilot-setup-steps.yml`, and `.gitattributes`.
 - Make sure `COPILOT_GITHUB_TOKEN` is a repository Actions secret, not a value committed to the repository.
 - Step 1 only completes after your setup pull request is merged into `main`.
 

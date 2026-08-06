@@ -58,28 +58,12 @@ jobs:
           file: exercise-toolkit/markdown-templates/step-feedback/checking-work.md
           edit-mode: replace
 
-      - name: Check setup workflow exists
-        id: check-setup-file
+      - name: Check dispatcher skill exists
+        id: check-skill-file
         continue-on-error: true
         uses: skills/exercise-toolkit/actions/file-exists@v0.9.3
         with:
-          file: .github/workflows/copilot-setup-steps.yml
-
-      - name: Check workflow installs gh-aw
-        id: check-setup-action
-        continue-on-error: true
-        uses: skills/action-keyphrase-checker@v2
-        with:
-          text-file: .github/workflows/copilot-setup-steps.yml
-          keyphrase: setup-cli
-
-      - name: Check workflow has copilot-setup-steps job
-        id: check-setup-job
-        continue-on-error: true
-        uses: skills/action-keyphrase-checker@v2
-        with:
-          text-file: .github/workflows/copilot-setup-steps.yml
-          keyphrase: copilot-setup-steps
+          file: .github/skills/agentic-workflows/SKILL.md
 
       - name: Check agentic workflows agent exists
         id: check-agent-file
@@ -95,12 +79,20 @@ jobs:
         with:
           file: .github/mcp.json
 
-      - name: Check gitattributes tracks lock files
-        id: check-gitattributes
+      - name: Check Copilot setup steps workflow exists
+        id: check-copilot-setup-steps
         continue-on-error: true
         uses: skills/exercise-toolkit/actions/file-exists@v0.9.3
         with:
-          file: .gitattributes
+          file: .github/workflows/copilot-setup-steps.yml
+
+      - name: Check gitattributes tracks lock files
+        id: check-gitattributes
+        continue-on-error: true
+        uses: skills/action-keyphrase-checker@v2
+        with:
+          text-file: .gitattributes
+          keyphrase: .github/workflows/*.lock.yml
 
       - name: Update comment - step results
         uses: GrantBirki/comment@v2.1.1
@@ -113,17 +105,15 @@ jobs:
           vars: |
             step_number: 1
             results_table:
-              - description: "Checked for .github/workflows/copilot-setup-steps.yml"
-                passed: ${{ steps.check-setup-file.outcome == 'success' }}
-              - description: "Checked that the setup workflow installs gh-aw"
-                passed: ${{ steps.check-setup-action.outcome == 'success' }}
-              - description: "Checked for the copilot-setup-steps job"
-                passed: ${{ steps.check-setup-job.outcome == 'success' }}
+              - description: "Checked for the agentic workflows dispatcher skill"
+                passed: ${{ steps.check-skill-file.outcome == 'success' }}
               - description: "Checked for the Agentic Workflows agent file"
                 passed: ${{ steps.check-agent-file.outcome == 'success' }}
               - description: "Checked for the MCP configuration file"
                 passed: ${{ steps.check-mcp-file.outcome == 'success' }}
-              - description: "Checked that workflow lock files are tracked in .gitattributes"
+              - description: "Checked for the Copilot setup steps workflow"
+                passed: ${{ steps.check-copilot-setup-steps.outcome == 'success' }}
+              - description: "Checked that .gitattributes tracks workflow lock files"
                 passed: ${{ steps.check-gitattributes.outcome == 'success' }}
 
       - name: Fail job if not all checks passed

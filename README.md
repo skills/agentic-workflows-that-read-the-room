@@ -6,7 +6,7 @@ _Learn how to install GitHub Agentic Workflows and create an AI-powered workflow
 
 - **Who is this for**: Developers, DevOps engineers, and anyone curious about AI-powered automation in GitHub repositories.
 - **What you'll learn**: How to install the `gh aw` extension, author an agentic workflow in markdown, and run it so proposed changes flow through pull requests.
-- **What you'll build**: A repository setup workflow plus an agentic workflow that drafts updates to Mona's GitHub Info website using her notes, the GitHub Blog, and the GitHub Changelog—then opens a pull request for review.
+- **What you'll build**: Repository-level agentic workflow setup plus an agentic workflow that drafts updates to Mona's GitHub Info website using her notes, the GitHub Blog, and the GitHub Changelog—then opens a pull request for review.
 - **Prerequisites**:
   - A GitHub account with access to GitHub Copilot
   - Basic familiarity with GitHub repositories, branches, and pull requests
