@@ -86,9 +86,11 @@ jobs:
         id: find-generated-pr
         continue-on-error: true
         run: |
-          run_created_at="${{ github.event.workflow_run.created_at }}"
-          while IFS=$'	' read -r pr_number created_at; do
-            if [ -n "$run_created_at" ] && [[ "$created_at" < "$run_created_at" ]]; then
+          run_created_at="${{ github.event.workflow_run.run_started_at || github.run_started_at }}"
+          run_created_epoch="$(date -u -d "$run_created_at" +%s 2>/dev/null || echo 0)"
+          while IFS=$'\t' read -r pr_number created_at; do
+            created_epoch="$(date -u -d "$created_at" +%s 2>/dev/null || echo 0)"
+            if [ "$run_created_epoch" -ne 0 ] && [ "$created_epoch" -lt "$run_created_epoch" ]; then
               continue
             fi
             if gh pr diff "$pr_number" --name-only | grep -q '^site/content/github-info.md$'; then
