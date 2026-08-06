@@ -79,6 +79,13 @@ jobs:
         with:
           file: .github/mcp.json
 
+      - name: Check Copilot setup steps workflow exists
+        id: check-copilot-setup-steps
+        continue-on-error: true
+        uses: skills/exercise-toolkit/actions/file-exists@v0.9.3
+        with:
+          file: .github/workflows/copilot-setup-steps.yml
+
       - name: Check gitattributes tracks lock files
         id: check-gitattributes
         continue-on-error: true
@@ -104,6 +111,8 @@ jobs:
                 passed: ${{ steps.check-agent-file.outcome == 'success' }}
               - description: "Checked for the MCP configuration file"
                 passed: ${{ steps.check-mcp-file.outcome == 'success' }}
+              - description: "Checked for the Copilot setup steps workflow"
+                passed: ${{ steps.check-copilot-setup-steps.outcome == 'success' }}
               - description: "Checked that .gitattributes tracks workflow lock files"
                 passed: ${{ steps.check-gitattributes.outcome == 'success' }}
 
