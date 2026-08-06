@@ -20,7 +20,7 @@ View Mona's website locally. In the left sidebar(if it's not running yet), selec
 
 Here's what you accomplished:
 
-- **Installed agentic workflow setup** — You added the repository workflow that prepares GitHub agentic workflows tooling.
+- **Installed agentic workflow setup** — You added the dispatcher skill, custom agent, MCP configuration, and Git attributes that prepare the repository for GitHub agentic workflows.
 - **Created a website updater** — You drafted a workflow for Mona's GitHub Info website that uses repository notes plus the GitHub Blog and GitHub Changelog, and compiles it to a `.lock.yml` workflow file.
 - **Added a new source site to the workflow** — You updated the workflow to include the [awesome-copilot workflows](https://awesome-copilot.github.com/workflows/) site as a source for `.github/workflows/update-github-info.md` and recompiled it.
 - **Ran the agentic workflow** — You compiled Mona's updater, ran it, and inspected the pull request it generated.

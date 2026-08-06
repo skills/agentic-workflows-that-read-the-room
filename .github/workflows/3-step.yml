@@ -21,6 +21,7 @@ jobs:
     uses: skills/exercise-toolkit/.github/workflows/find-exercise-issue.yml@v0.9.3
 
   check_step_work:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     name: Check step work
     runs-on: ubuntu-latest
     needs: [find_exercise]
@@ -63,7 +64,7 @@ jobs:
         uses: skills/action-keyphrase-checker@v2
         with:
           text-file: .github/workflows/update-github-info.md
-          keyphrase: "awesome-copilot.github.com"
+          keyphrase: "https://awesome-copilot.github.com/workflows/"
           case-sensitive: false
 
       - name: Check compiled workflow exists
@@ -85,12 +86,16 @@ jobs:
         id: find-generated-pr
         continue-on-error: true
         run: |
-          for pr_number in $(gh pr list --state open --limit 100 --json number --jq '.[].number'); do
+          run_created_at="${{ github.event.workflow_run.created_at }}"
+          while IFS=$'	' read -r pr_number created_at; do
+            if [ -n "$run_created_at" ] && [[ "$created_at" < "$run_created_at" ]]; then
+              continue
+            fi
             if gh pr diff "$pr_number" --name-only | grep -q '^site/content/github-info.md$'; then
               echo "pr_number=$pr_number" >> "$GITHUB_OUTPUT"
               exit 0
             fi
-          done
+          done < <(gh pr list --state open --base main --limit 100 --json number,createdAt --jq '.[] | [.number, .createdAt] | @tsv')
           echo "No open pull request updates site/content/github-info.md"
           exit 1
         env:
@@ -102,6 +107,12 @@ jobs:
         run: |
           title="$(gh pr view "${{ steps.find-generated-pr.outputs.pr_number }}" --json title --jq .title)"
           echo "$title" | grep -Eiq 'Mona|GitHub Info|website update'
+
+      - name: Check generated PR includes source context
+        id: check-pr-sources
+        continue-on-error: true
+        run: |
+          gh pr diff "${{ steps.find-generated-pr.outputs.pr_number }}" | grep -Eiq 'GitHub Blog|GitHub Changelog|github.blog|github.com'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -126,6 +137,8 @@ jobs:
                 passed: ${{ steps.find-generated-pr.outcome == 'success' }}
               - description: "Checked that the generated pull request title mentions Mona, GitHub Info, or a website update"
                 passed: ${{ steps.check-pr-title.outcome == 'success' }}
+              - description: "Checked that the generated pull request includes source context"
+                passed: ${{ steps.check-pr-sources.outcome == 'success' }}
 
       - name: Fail job if not all checks passed
         if: contains(steps.*.outcome, 'failure')
