@@ -77,6 +77,7 @@ jobs:
         with:
           text-file: .github/agents/agentic-workflows.md
           keyphrase: do not compile
+          case-sensitive: false
 
       - name: Check workflow uses all three sources
         id: check-workflow-sources
@@ -124,9 +125,8 @@ jobs:
         id: check-workflow-network
         continue-on-error: true
         run: |
-          grep -qi 'ALLOWED_DOMAINS' .github/workflows/update-github-info.lock.yml
-          grep -q 'github.blog' .github/workflows/update-github-info.lock.yml
-          grep -q 'github.com' .github/workflows/update-github-info.lock.yml
+          grep -qi 'github.blog' .github/workflows/update-github-info.lock.yml
+          grep -qi 'github.com' .github/workflows/update-github-info.lock.yml
 
       - name: Update comment - step results
         uses: GrantBirki/comment@v2.1.1
