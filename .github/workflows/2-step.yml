@@ -91,7 +91,7 @@ jobs:
         id: check-workflow-name
         continue-on-error: true
         run: |
-          grep -Eiq 'name:[[:space:]]*"?update-github-info"?' .github/workflows/update-github-info.lock.yml
+          grep -Eiq '^name:[[:space:]]*"?update-github-info"?' .github/workflows/update-github-info.lock.yml
 
       - name: Check workflow creates a pull request for Mona
         id: check-workflow-review
@@ -125,8 +125,8 @@ jobs:
         id: check-workflow-network
         continue-on-error: true
         run: |
-          grep -qi 'github.blog' .github/workflows/update-github-info.lock.yml
-          grep -qi 'github.com' .github/workflows/update-github-info.lock.yml
+          grep -qi '"github.blog"' .github/workflows/update-github-info.lock.yml
+          grep -qi '"github.com"' .github/workflows/update-github-info.lock.yml
 
       - name: Update comment - step results
         uses: GrantBirki/comment@v2.1.1
