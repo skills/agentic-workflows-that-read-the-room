@@ -56,21 +56,6 @@ jobs:
           file: exercise-toolkit/markdown-templates/step-feedback/checking-work.md
           edit-mode: replace
 
-      - name: Check website content file exists
-        id: check-site-file
-        continue-on-error: true
-        uses: skills/exercise-toolkit/actions/file-exists@v0.9.3
-        with:
-          file: site/content/github-info.md
-
-      - name: Check website includes latest updates section
-        id: check-site-content
-        continue-on-error: true
-        uses: skills/action-keyphrase-checker@v2
-        with:
-          text-file: site/content/github-info.md
-          keyphrase: Latest GitHub Updates
-
       - name: Check workflow file exists
         id: check-workflow-file
         continue-on-error: true
@@ -78,29 +63,34 @@ jobs:
         with:
           file: .github/workflows/update-github-info.md
 
+      - name: Check compiled workflow exists
+        id: check-lock-file
+        continue-on-error: true
+        uses: skills/exercise-toolkit/actions/file-exists@v0.9.3
+        with:
+          file: .github/workflows/update-github-info.lock.yml
+
       - name: Check agent instructions include no auto-compile rule
         id: check-agent-no-compile
         continue-on-error: true
         uses: skills/action-keyphrase-checker@v2
         with:
           text-file: .github/agents/agentic-workflows.md
-          keyphrase: Only create or update the markdown workflow file.
+          keyphrase: do not compile
 
       - name: Check workflow uses all three sources
         id: check-workflow-sources
         continue-on-error: true
         run: |
           grep -q 'notes/mona-notes.md' .github/workflows/update-github-info.md
-          grep -q 'https://github.blog/latest/' .github/workflows/update-github-info.md
-          grep -q 'https://github.blog/changelog/' .github/workflows/update-github-info.md
+          grep -qi 'github.blog/latest' .github/workflows/update-github-info.md
+          grep -qi 'github.blog/changelog' .github/workflows/update-github-info.md
 
-      - name: Check workflow has the expected name
+      - name: Check compiled workflow has the expected name
         id: check-workflow-name
         continue-on-error: true
-        uses: skills/action-keyphrase-checker@v2
-        with:
-          text-file: .github/workflows/update-github-info.md
-          keyphrase: "name: update-github-info"
+        run: |
+          grep -Eiq 'name:[[:space:]]*"?update-github-info"?' .github/workflows/update-github-info.lock.yml
 
       - name: Check workflow creates a pull request for Mona
         id: check-workflow-review
@@ -119,8 +109,8 @@ jobs:
         id: check-workflow-tools
         continue-on-error: true
         run: |
-          grep -q "edit:" .github/workflows/update-github-info.md
-          grep -q "web-fetch:" .github/workflows/update-github-info.md
+          grep -qi "edit:" .github/workflows/update-github-info.md
+          grep -qi "web-fetch:" .github/workflows/update-github-info.md
 
       - name: Check workflow supports manual runs
         id: check-workflow-dispatch
@@ -130,13 +120,13 @@ jobs:
           text-file: .github/workflows/update-github-info.md
           keyphrase: workflow_dispatch
 
-      - name: Check workflow declares network access
+      - name: Check compiled workflow declares network access
         id: check-workflow-network
         continue-on-error: true
         run: |
-          grep -q 'network' .github/workflows/update-github-info.md
-          grep -q 'github.blog' .github/workflows/update-github-info.md
-          grep -q 'github.com' .github/workflows/update-github-info.md
+          grep -qi 'ALLOWED_DOMAINS' .github/workflows/update-github-info.lock.yml
+          grep -q 'github.blog' .github/workflows/update-github-info.lock.yml
+          grep -q 'github.com' .github/workflows/update-github-info.lock.yml
 
       - name: Update comment - step results
         uses: GrantBirki/comment@v2.1.1
@@ -149,17 +139,15 @@ jobs:
           vars: |
             step_number: 2
             results_table:
-              - description: "Checked for the website content file"
-                passed: ${{ steps.check-site-file.outcome == 'success' }}
-              - description: "Checked for a Latest GitHub Updates section"
-                passed: ${{ steps.check-site-content.outcome == 'success' }}
               - description: "Checked for .github/workflows/update-github-info.md"
                 passed: ${{ steps.check-workflow-file.outcome == 'success' }}
+              - description: "Checked for the compiled .github/workflows/update-github-info.lock.yml"
+                passed: ${{ steps.check-lock-file.outcome == 'success' }}
               - description: "Checked that the agent instructions include the no auto-compile rule"
                 passed: ${{ steps.check-agent-no-compile.outcome == 'success' }}
               - description: "Checked that the workflow uses Mona's notes, the GitHub Blog, and the GitHub Changelog"
                 passed: ${{ steps.check-workflow-sources.outcome == 'success' }}
-              - description: "Checked that the workflow has the expected name"
+              - description: "Checked that the compiled workflow has the expected name"
                 passed: ${{ steps.check-workflow-name.outcome == 'success' }}
               - description: "Checked that the workflow creates a pull request for Mona"
                 passed: ${{ steps.check-workflow-review.outcome == 'success' }}
@@ -169,7 +157,7 @@ jobs:
                 passed: ${{ steps.check-workflow-tools.outcome == 'success' }}
               - description: "Checked that the workflow supports manual runs"
                 passed: ${{ steps.check-workflow-dispatch.outcome == 'success' }}
-              - description: "Checked that the workflow declares network access for GitHub Blog and Changelog sources"
+              - description: "Checked that the compiled workflow declares network access for GitHub Blog and Changelog sources"
                 passed: ${{ steps.check-workflow-network.outcome == 'success' }}
 
       - name: Fail job if not all checks passed

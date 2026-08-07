@@ -6,7 +6,10 @@ Nice work getting the repository ready. Now it's time to build the first agentic
 
 An agentic workflow can read repository context, compare sources, draft changes, and open a pull request for human review. That makes it a great fit for Mona's website, where updates should be prepared automatically but still reviewed before they are published.
 
-In this step, you'll create a workflow definition in `.github/workflows/` and pair it with a real content update in the website source. Your workflow should tell the agent to read Mona's notes, check the GitHub Blog and the GitHub Changelog, and then prepare a pull request for Mona to review.
+In this step, you'll create an agentic workflow definition in `.github/workflows/` and compile it into a hardened workflow. Your workflow should tell the agent to read Mona's notes, check the GitHub Blog and the GitHub Changelog, and then prepare a pull request for Mona to review.
+
+> [!NOTE]
+> This step uses two surfaces: the **Copilot Chat** agentic-workflows agent authors and edits the workflow markdown, and the **terminal** runs `gh aw compile` and Git. Author in Chat, compile and commit in the terminal.
 
 ### :keyboard: Activity: Create Mona's updater workflow
 
@@ -14,7 +17,7 @@ Continue working in VS Code. If you closed your browser editor, reopen your deve
 
 1. In the new ![Static Badge](https://img.shields.io/badge/Terminal-text?logo=gnometerminal&labelColor=0969da&color=ddf4ff) **terminal window**, use the keyboard shortcut `Ctrl + I` (Windows) or `Cmd + I` (Mac) to bring up **Copilot's Terminal Inline Chat**.
 
-2. Ask Copilot to help create a branch, update a file, and publish the work.
+2. Ask Copilot to start you on the latest `main` and create a working branch.
 
    > ![Static Badge](https://img.shields.io/badge/-Prompt-text?style=social&logo=github%20copilot)
    >
@@ -22,9 +25,6 @@ Continue working in VS Code. If you closed your browser editor, reopen your deve
    > Hey copilot, 
    > - Make sure I am on the latest main branch
    > - Create a new branch named create-mona-updater
-   > - Update site/content/github-info.md with a new section
-   >   named "Latest GitHub Updates" and include at least
-   >   one concise update for readers.
    > ```
 
    > 💡 **Tip:** If Copilot doesn't give you quite what you want, you can always continue explaining what you need. Copilot will remember the conversation history for follow-up responses.
@@ -74,7 +74,7 @@ Continue working in VS Code. If you closed your browser editor, reopen your deve
    > gh aw compile .github/workflows/update-github-info.md
    > ```
 
-2. Review Copilot's suggested changes. Make sure `site/content/github-info.md` includes `## Latest GitHub Updates`.
+2. Confirm the compile succeeded and generated the hardened `.github/workflows/update-github-info.lock.yml` next to your markdown workflow.
 
 3. In `.github/workflows/update-github-info.md`, make sure Copilot clearly instructed the agent to:
 
@@ -91,21 +91,21 @@ Continue working in VS Code. If you closed your browser editor, reopen your deve
    name: update-github-info
    description: Draft website updates for Mona's GitHub Info site from official GitHub sources.
    on:
-   workflow_dispatch:
-   schedule:
-      - cron: '17 9 * * *'
+     workflow_dispatch:
+     schedule:
+       - cron: '17 9 * * *'
    safe-outputs:
-   create-pull-request:
-      title-prefix: "[mona] "
-      draft: true
-      fallback-as-issue: false
+     create-pull-request:
+       title-prefix: "[mona] "
+       draft: true
+       fallback-as-issue: false
    tools:
-   edit:
-   web-fetch:
+     edit:
+     web-fetch:
    network:
-   allowed:
-      - github.com
-      - github.blog
+     allowed:
+       - github.com
+       - github.blog
    ---
 
    # Update Mona's GitHub Info website
@@ -134,7 +134,7 @@ Continue working in VS Code. If you closed your browser editor, reopen your deve
    > ![Static Badge](https://img.shields.io/badge/-Prompt-text?style=social&logo=github%20copilot)
    >
    > ```prompt
-   > - Commit the website content and Agentic Workflow changes.
+   > - Commit the agentic workflow markdown and the compiled .lock.yml file.
    > - Push the create-mona-updater branch.
    > - Open a pull request into main.
    > - Use the pull request title "Create Mona website updater workflow".
@@ -145,7 +145,7 @@ Continue working in VS Code. If you closed your browser editor, reopen your deve
 <details>
 <summary>Having trouble? 🤷</summary><br/>
 
-- The grading check looks for both a website content update and a new workflow file.
+- The grading check looks for the agentic workflow markdown and its compiled `.github/workflows/update-github-info.lock.yml`, so make sure you ran `gh aw compile` and committed both files.
 - Include the phrases `GitHub Blog`, `GitHub Changelog`, `safe-outputs`, `create-pull-request`, and `pull request` in `.github/workflows/update-github-info.md`.
 - Keep your workflow in markdown (`.md`) so the exercise focuses on the agent instructions.
 
