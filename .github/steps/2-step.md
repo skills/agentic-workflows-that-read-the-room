@@ -61,6 +61,8 @@ Continue working in VS Code. If you closed your browser editor, reopen your deve
    > - update site/content/github-info.md, and open
    > - a pull request for Mona to review.
    > - Check the syntax of the configuration for the agentic workflow is valid
+   > - If you need public guidance or reference files, read them with
+   >   GitHub repository API tools instead of terminal, CLI, or sandboxed commands
    > - Don't compile the workflow
    > ```
 
