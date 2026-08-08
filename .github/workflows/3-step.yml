@@ -82,12 +82,37 @@ jobs:
           text-file: .github/workflows/update-github-info.lock.yml
           keyphrase: COPILOT_GITHUB_TOKEN
 
+      - name: Check workflow allows access to Awesome Copilot
+        id: check-awesome-copilot-network
+        continue-on-error: true
+        run: |
+          network_config="$(
+            awk '
+              /^network:[[:space:]]*/ {
+                network = 1
+                print
+                next
+              }
+              network && /^[^[:space:]-][^:]*:/ {
+                exit
+              }
+              network
+            ' .github/workflows/update-github-info.md |
+              tr -d "\"'"
+          )"
+          printf '%s\n' "$network_config" |
+            grep -Eqi '(^|[][[:space:],-])(awesome-copilot\.)?github\.com([][[:space:],]|$)|(^|[][[:space:],-])github([][[:space:],]|$)'
+
       - name: Find generated PR that updates website content
         id: find-generated-pr
         continue-on-error: true
         run: |
-          run_created_at="${{ github.event.workflow_run.run_started_at || github.run_started_at }}"
-          run_created_epoch="$(date -u -d "$run_created_at" +%s 2>/dev/null || echo 0)"
+          run_created_at="${{ github.event.workflow_run.run_started_at || '' }}"
+          if [ -n "$run_created_at" ]; then
+            run_created_epoch="$(date -u -d "$run_created_at" +%s 2>/dev/null || echo 0)"
+          else
+            run_created_epoch=0
+          fi
           while IFS=$'\t' read -r pr_number created_at; do
             created_epoch="$(date -u -d "$created_at" +%s 2>/dev/null || echo 0)"
             if [ "$run_created_epoch" -ne 0 ] && [ "$created_epoch" -lt "$run_created_epoch" ]; then
@@ -116,7 +141,10 @@ jobs:
         if: steps.find-generated-pr.outcome == 'success'
         continue-on-error: true
         run: |
-          gh pr diff "${{ steps.find-generated-pr.outputs.pr_number }}" | grep -Eiq 'GitHub Blog|GitHub Changelog|github.blog|github.com'
+          {
+            gh pr view "${{ steps.find-generated-pr.outputs.pr_number }}" --json body --jq .body
+            gh pr diff "${{ steps.find-generated-pr.outputs.pr_number }}"
+          } | grep -Eiq 'GitHub Blog|GitHub Changelog|github\.blog|awesome-copilot\.github\.com'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -137,6 +165,8 @@ jobs:
                 passed: ${{ steps.check-lock-file.outcome == 'success' }}
               - description: "Checked that the compiled workflow references COPILOT_GITHUB_TOKEN"
                 passed: ${{ steps.check-copilot-secret.outcome == 'success' }}
+              - description: "Checked that the workflow allows network access to the Awesome Copilot source"
+                passed: ${{ steps.check-awesome-copilot-network.outcome == 'success' }}
               - description: "Checked that an open generated pull request updates site/content/github-info.md"
                 passed: ${{ steps.find-generated-pr.outcome == 'success' }}
               - description: "Checked that the generated pull request title mentions Mona, GitHub Info, or a website update"

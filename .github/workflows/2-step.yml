@@ -131,18 +131,22 @@ jobs:
         id: check-workflow-network
         continue-on-error: true
         run: |
-          awk '
-            /^network:[[:space:]]*/ {
-              network = 1
-              print
-              next
-            }
-            network && /^[^[:space:]-][^:]*:/ {
-              exit
-            }
-            network
-          ' .github/workflows/update-github-info.md |
-            grep -qi 'github\.blog'
+          network_config="$(
+            awk '
+              /^network:[[:space:]]*/ {
+                network = 1
+                print
+                next
+              }
+              network && /^[^[:space:]-][^:]*:/ {
+                exit
+              }
+              network
+            ' .github/workflows/update-github-info.md |
+              tr -d "\"'"
+          )"
+          printf '%s\n' "$network_config" |
+            grep -Eqi '(^|[][[:space:],-])github(\.blog)?([][[:space:],]|$)'
 
       - name: Update comment - step results
         uses: GrantBirki/comment@v2.1.1
