@@ -47,7 +47,7 @@ The workflow uses `safe-outputs: create-pull-request`, so the agent can draft we
 
 4. Confirm the compile succeeded and updated `.github/workflows/update-github-info.lock.yml`.
 
-5. In the new ![Static Badge](https://img.shields.io/badge/Terminal-text?logo=gnometerminal&labelColor=0969da&color=ddf4ff) **terminal window**, use the keyboard shortcut Ctrl + I (Windows) or Cmd + I (Mac) to bring up Copilot's Terminal Inline Chat.
+5. In the terminal window, use the keyboard shortcut Ctrl + I (Windows) or Cmd + I (Mac) to bring up Copilot's Terminal Inline Chat.
 
    Ask Copilot to commit, push, and open a pull request.
 
