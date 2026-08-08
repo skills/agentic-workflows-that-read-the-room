@@ -26,10 +26,15 @@ The workflow uses `safe-outputs: create-pull-request`, so the agent can draft we
    > ![Static Badge](https://img.shields.io/badge/-Prompt-text?style=social&logo=github%20copilot)
    >
    > ```prompt
-   > - Update .github/workflows/update-github-info.md workflow
+   > - Update the .github/workflows/update-github-info.md workflow.
+   > - Keep its existing sources and network access.
    > - Tell agent to:
-   >      web fetch https://awesome-copilot.github.com/workflows/
-   > - Add to sources awesome-copilot workflows https://awesome-copilot.github.com/workflows/
+   >   - web fetch https://awesome-copilot.github.com/workflows/
+   > - Add Awesome Copilot workflows to the sources:
+   >   https://awesome-copilot.github.com/workflows/
+   > - Add awesome-copilot.github.com to network.allowed without removing
+   >   the existing GitHub Blog network access.
+   > - Don't compile the workflow.
    > ```
 
 3. Compile the agentic workflow file `.github/workflows/update-github-info.md` in the ![Static Badge](https://img.shields.io/badge/Terminal-text?logo=gnometerminal&labelColor=0969da&color=ddf4ff) **terminal window**.
@@ -40,20 +45,23 @@ The workflow uses `safe-outputs: create-pull-request`, so the agent can draft we
    > gh aw compile .github/workflows/update-github-info.md
    > ```
 
-4. In the new ![Static Badge](https://img.shields.io/badge/Terminal-text?logo=gnometerminal&labelColor=0969da&color=ddf4ff) **terminal window**, use the keyboard shortcut Ctrl + I (Windows) or Cmd + I (Mac) to bring up Copilot's Terminal Inline Chat.
+4. Confirm the compile succeeded and updated `.github/workflows/update-github-info.lock.yml`.
+
+5. In the terminal window, use the keyboard shortcut Ctrl + I (Windows) or Cmd + I (Mac) to bring up Copilot's Terminal Inline Chat.
 
    Ask Copilot to commit, push, and open a pull request.
 
    > ![Static Badge](https://img.shields.io/badge/-Prompt-text?style=social&logo=github%20copilot)
    >
    > ```prompt
-   > - Commit the website content and Agentic Workflow changes.
-   > - Push to the `create-mona-updater` branch
-   > - Open a pull request into main.
+   > - Commit all changed files, including the agentic workflow markdown
+   >   and the updated compiled .lock.yml file.
+   > - Push the latest commits to the existing `create-mona-updater` branch.
+   > - Open a pull request into main if one does not already exist.
    > - Use the pull request title "Update Mona website updater workflow".
    > ```
 
-5. In the GitHub UI merge the pull request, then open the **Actions** tab, select the `update-github-info` workflow, and choose **Run workflow**.
+6. In the GitHub UI merge the pull request, then open the **Actions** tab, select the `update-github-info` workflow, and choose **Run workflow**.
 
    <img width="30%" alt="Run the update-github-info workflow" src="../images/run-update-github-info-1.png" />
 
@@ -61,21 +69,21 @@ The workflow uses `safe-outputs: create-pull-request`, so the agent can draft we
 
    <img width="50%" height="50%" alt="Run the update-github-info workflow" src="../images/run-update-github-info-3.png" />
 
-6. Wait for the workflow to create a pull request for Mona's website update.
+7. Wait for the workflow to create a pull request for Mona's website update.
 
    <img width="50%" alt="Pull request list showing a generated Mona website update pull request" src="../images/generated-update-pr.svg" />
 
-7. Open the generated pull request and review the **Files changed** tab. Confirm it updates `site/content/github-info.md` and mentions the source of the update.
+8. Open the generated pull request and review the **Files changed** tab. Confirm it updates `site/content/github-info.md` and mentions the source of the update.
 
    <img width="50%" alt="Pull request files changed tab showing site/content/github-info.md" src="../images/pr-files-changed-github-info.svg" />
 
-8. Leave the generated pull request open. When the updater workflow finishes, Mona will look for an open pull request that updates `site/content/github-info.md`. Wait about 20 seconds, then refresh the exercise issue for the final review.
+9. Leave the generated pull request open. When the updater workflow finishes, Mona will look for an open pull request that updates `site/content/github-info.md`. Wait about 20 seconds, then refresh the exercise issue for the final review.
 
 <details>
 <summary>Having trouble? 🤷</summary><br/>
 
 - If the workflow fails before the agent starts, confirm `COPILOT_GITHUB_TOKEN` is configured as an Actions secret.
-- If compilation fails, make sure `.github/workflows/update-github-info.md` includes `safe-outputs`, `create-pull-request`, `workflow_dispatch`, and a `network` allowlist.
+- If compilation fails, make sure `.github/workflows/update-github-info.md` includes `safe-outputs`, `create-pull-request`, `workflow_dispatch`, and a `network` allowlist for the GitHub Blog and Awesome Copilot sources.
 - If no pull request appears, open the failed workflow run from the **Actions** tab and review the logs.
 - If the pull request opens as a draft, that is expected. Mona should review generated website changes before they merge.
 
