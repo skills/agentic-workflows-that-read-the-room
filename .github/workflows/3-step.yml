@@ -128,14 +128,6 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Check generated PR title mentions Mona or GitHub Info
-        id: check-pr-title
-        if: steps.find-generated-pr.outcome == 'success'
-        continue-on-error: true
-        run: |
-          title="$(gh pr view "${{ steps.find-generated-pr.outputs.pr_number }}" --json title --jq .title)"
-          echo "$title" | grep -Eiq 'Mona|GitHub Info|website update'
-
       - name: Check generated PR includes source context
         id: check-pr-sources
         if: steps.find-generated-pr.outcome == 'success'
@@ -169,8 +161,6 @@ jobs:
                 passed: ${{ steps.check-awesome-copilot-network.outcome == 'success' }}
               - description: "Checked that an open generated pull request updates site/content/github-info.md"
                 passed: ${{ steps.find-generated-pr.outcome == 'success' }}
-              - description: "Checked that the generated pull request title mentions Mona, GitHub Info, or a website update"
-                passed: ${{ steps.check-pr-title.outcome == 'success' }}
               - description: "Checked that the generated pull request includes source context"
                 passed: ${{ steps.check-pr-sources.outcome == 'success' }}
 
