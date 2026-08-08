@@ -135,6 +135,8 @@ jobs:
         run: |
           title="$(gh pr view "${{ steps.find-generated-pr.outputs.pr_number }}" --json title --jq .title)"
           test -n "$title"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Check generated PR includes source context
         id: check-pr-sources
