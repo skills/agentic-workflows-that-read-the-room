@@ -50,8 +50,10 @@ Continue working in VS Code. If you closed your browser editor, reopen your deve
    > ```prompt
    > - Create .github/workflows/update-github-info.md
    >   as an agentic workflow markdown file.
+   > - Set the frontmatter name to exactly update-github-info.
    > - Run the workflow on daily or on demand with workflow_dispatch.
    > - Give the workflow edit access through the tools configuration.
+   > - Set network.allowed to include github.blog and github.com.
    > - Use safe-outputs with create-pull-request so the agent can
    >   propose changes without writing directly to main.
    > - Tell the agent to:
@@ -61,6 +63,9 @@ Continue working in VS Code. If you closed your browser editor, reopen your deve
    > - update site/content/github-info.md, and open
    > - a pull request for Mona to review.
    > - Check the syntax of the configuration for the agentic workflow is valid
+   > - Read external public guidance with web-fetch
+   > - Read repository guidance or reference files with GitHub repository API tools
+   >   instead of terminal, CLI, or sandboxed commands
    > - Don't compile the workflow
    > ```
 
@@ -134,9 +139,10 @@ Continue working in VS Code. If you closed your browser editor, reopen your deve
    > ![Static Badge](https://img.shields.io/badge/-Prompt-text?style=social&logo=github%20copilot)
    >
    > ```prompt
-   > - Commit the agentic workflow markdown and the compiled .lock.yml file.
-   > - Push the create-mona-updater branch.
-   > - Open a pull request into main.
+   > - Commit all changed files, including the agentic workflow markdown
+   >   and the compiled .lock.yml file.
+   > - Push the latest commits to the existing create-mona-updater branch.
+   > - Open a pull request into main if one does not already exist.
    > - Use the pull request title "Create Mona website updater workflow".
    > ```
 
@@ -145,7 +151,7 @@ Continue working in VS Code. If you closed your browser editor, reopen your deve
 <details>
 <summary>Having trouble? 🤷</summary><br/>
 
-- The grading check looks for the agentic workflow markdown and its compiled `.github/workflows/update-github-info.lock.yml`, so make sure you ran `gh aw compile` and committed both files.
+- The grading check looks for the agentic workflow markdown and its compiled `.github/workflows/update-github-info.lock.yml`, so make sure you ran `gh aw compile` and committed all changed files.
 - Include the phrases `GitHub Blog`, `GitHub Changelog`, `safe-outputs`, `create-pull-request`, and `pull request` in `.github/workflows/update-github-info.md`.
 - Keep your workflow in markdown (`.md`) so the exercise focuses on the agent instructions.
 

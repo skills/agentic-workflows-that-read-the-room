@@ -91,7 +91,13 @@ jobs:
         id: check-workflow-name
         continue-on-error: true
         run: |
-          grep -Eiq '^name:[[:space:]]*"?update-github-info"?' .github/workflows/update-github-info.lock.yml
+          workflow_name="$(
+            sed -n 's/^name:[[:space:]]*//p' .github/workflows/update-github-info.lock.yml |
+              head -n 1 |
+              tr '[:upper:]' '[:lower:]' |
+              tr -cd '[:alnum:]'
+          )"
+          test "$workflow_name" = "updategithubinfo"
 
       - name: Check workflow creates a pull request for Mona
         id: check-workflow-review
@@ -121,12 +127,22 @@ jobs:
           text-file: .github/workflows/update-github-info.md
           keyphrase: workflow_dispatch
 
-      - name: Check compiled workflow declares network access
+      - name: Check workflow allows access to GitHub Blog
         id: check-workflow-network
         continue-on-error: true
         run: |
-          grep -qi '"github.blog"' .github/workflows/update-github-info.lock.yml
-          grep -qi '"github.com"' .github/workflows/update-github-info.lock.yml
+          awk '
+            /^network:[[:space:]]*/ {
+              network = 1
+              print
+              next
+            }
+            network && /^[^[:space:]-][^:]*:/ {
+              exit
+            }
+            network
+          ' .github/workflows/update-github-info.md |
+            grep -qi 'github\.blog'
 
       - name: Update comment - step results
         uses: GrantBirki/comment@v2.1.1
@@ -157,7 +173,7 @@ jobs:
                 passed: ${{ steps.check-workflow-tools.outcome == 'success' }}
               - description: "Checked that the workflow supports manual runs"
                 passed: ${{ steps.check-workflow-dispatch.outcome == 'success' }}
-              - description: "Checked that the compiled workflow declares network access for GitHub Blog and Changelog sources"
+              - description: "Checked that the workflow allows network access to the GitHub Blog and Changelog source"
                 passed: ${{ steps.check-workflow-network.outcome == 'success' }}
 
       - name: Fail job if not all checks passed
