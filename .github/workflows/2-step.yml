@@ -103,8 +103,7 @@ jobs:
         id: check-workflow-review
         continue-on-error: true
         run: |
-          grep -Eiq 'pull request.*Mona|Mona.*pull request|review.*Mona' .github/workflows/update-github-info.md
-
+          grep -Eiq 'pull request.*Mona|Mona.*pull request|review.*Mona|Mona.*review' .github/workflows/update-github-info.md
       - name: Check workflow uses pull request safe output
         id: check-workflow-safe-output
         continue-on-error: true
@@ -146,8 +145,7 @@ jobs:
               tr -d "\"'"
           )"
           printf '%s\n' "$network_config" |
-            grep -Eqi '(^|[][[:space:],-])github(\.blog)?([][[:space:],]|$)'
-
+            grep -Eqi 'github(\.blog)?' <<< "$network_config"
       - name: Update comment - step results
         uses: GrantBirki/comment@v2.1.1
         with:
