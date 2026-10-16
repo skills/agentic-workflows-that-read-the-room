@@ -56,6 +56,7 @@ Continue working in VS Code. If you closed your browser editor, reopen your deve
    > - Set network.allowed to include github.blog and github.com.
    > - Use safe-outputs with create-pull-request so the agent can
    >   propose changes without writing directly to main.
+   > - Configure the engine to use copilot-sdk
    > - Tell the agent to:
    >   - read notes/mona-notes.md,
    >   - web fetch https://github.blog/latest/
@@ -111,6 +112,9 @@ Continue working in VS Code. If you closed your browser editor, reopen your deve
      allowed:
        - github.com
        - github.blog
+   engine:
+      id: copilot
+      copilot-sdk: true
    ---
 
    # Update Mona's GitHub Info website
